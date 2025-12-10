@@ -9,6 +9,7 @@ import CacheLoader from "./CacheLoader.js";
 import IndexType from "./cacheTypes/IndexType.js";
 import ConfigType from "./cacheTypes/ConfigType.js";
 
+import AnimNames from "../allAnimNames.js"
 /**
  * @typedef options
  * @property {boolean} threaded Use a Web Worker to read from the cache. Slower than non-threaded since threading overhead is big. Useful for web apps to have a responsive UI
@@ -158,6 +159,10 @@ class RSCache {
         } catch (e) {
             console.log(e);
         }
+    }
+
+    getAnimName(animId) {
+        return AnimNames[animId];
     }
 
     /**

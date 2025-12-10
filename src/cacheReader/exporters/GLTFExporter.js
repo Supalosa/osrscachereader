@@ -565,7 +565,7 @@ export default class GLTFExporter {
             return this.morphTargetsMap[skeletonId] + frame;
         }
 
-        this.addAnimation(frameIDs.map(frameIDsToIndex), frameLengths, def.name);
+        this.addAnimation(frameIDs.map(frameIDsToIndex), frameLengths, cache.getAnimName(def.id));
     }
 
     addColors() {
