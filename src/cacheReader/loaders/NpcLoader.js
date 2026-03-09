@@ -183,6 +183,12 @@ class NpcDefinition {
 
     /** @type {Array} */
     stats = [1, 1, 1, 1, 1, 1];
+
+    /** @type {boolean} */
+    idleAnimRestart;
+
+    /** @type {boolean} */
+    zbuf;
 }
 
 export { NpcDefinition };
@@ -409,10 +415,14 @@ export default class NpcLoader {
             def.footprintSize = dataview.readUint16();
         } else if (opcode == 129) {
             def.unknown1 = true;
+        } else if (opcode == 130) {
+            def.idleAnimRestart = true;
         } else if (opcode == 145) {
             def.canHideForOverlap = true;
         } else if (opcode == 146) {
             def.overlapTintHSL = dataview.readUint16();
+        } else if (opcode == 147) {
+            def.zbuf = false;
         } else if (opcode == 249) {
             length = dataview.readUint8();
 

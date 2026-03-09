@@ -209,6 +209,9 @@ export class ObjectDefinition {
     /** @type {Object} */
     params;
 
+    /** @type {boolean} */
+    raise;
+
     constructor() { }
 
     async getModel(cache, modelType, rotation) {
@@ -539,6 +542,8 @@ export default class ObjectLoader {
             def.soundVisibility = dataview.readUint8();
         } else if (opcode == 94) {
             def.unknown1 = true;
+        } else if (opcode == 96) {
+            def.raise = dataview.readUint8();
         } else if (opcode == 249) {
             var length = dataview.readUint8();
             def.params = {};

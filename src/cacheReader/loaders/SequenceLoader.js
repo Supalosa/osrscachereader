@@ -205,7 +205,6 @@ export default class SequenceLoader {
                 def.animMayaMasks[dataview.readUint8()] = true;
             }
         } else if (opcode == 18) {
-            console.log("name");
             def.name = dataview.readString();
         }
         else if (opcode == 19) {
