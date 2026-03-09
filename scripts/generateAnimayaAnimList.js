@@ -5,13 +5,15 @@ import fs from "fs";
 console.log("Loading cache");
 
 let cache = new RSCache("./cache");
+let animationNames = JSON.parse(fs.readFileSync("animationNames.json"));
+
 cache.onload.then(() => {
     console.log("Loading animations");
     cache
         .getAllFiles(IndexType.CONFIGS.id, ConfigType.SEQUENCE.id)
         .then((animationInfo) => {
             let anims = animationInfo.filter((x) => x.def.animMayaID != undefined && x.def.animMayaID >= 0);
-            let animIds = anims.map((x) => [x.def.id, x.def.name]);
+            let animIds = anims.map((x) => [x.def.id, animationNames[x.def.id]]);
             let animayaIds = anims.map((x) => x.def.animMayaID);
             let promises = [];
 
