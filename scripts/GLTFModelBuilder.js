@@ -10,6 +10,7 @@ let name = "model";
 let animations = [];
 let split = false;
 let excludeModelIds = [];
+let interpolation = "STEP";
 
 async function processCommand(cache, command, options) {
     switch (command) {
@@ -41,6 +42,16 @@ async function processCommand(cache, command, options) {
             break;
         case "exclude":
             excludeModelIds.push(...listToIds(options));
+            break;
+        case "interpolation":
+            if (options[0].toUpperCase() === "LINEAR") {
+                interpolation = "LINEAR";
+            } else if (options[0].toUpperCase() === "STEP") {
+                interpolation = "STEP";
+            } else {
+                console.error(`Invalid interpolation type. Use 'LINEAR' or 'STEP'. Defaulting to ${interpolation}`);
+                return;
+            }
             break;
     }
 }
@@ -132,8 +143,8 @@ async function exportGLTFModel(cache) {
     for (let i = 0; i < animations.length; ++i) {
         const lengths = allLengths[i];
         const morphTargets = allMorphTargets[i];
-        exporter.addAnimation(morphTargets, lengths);
-        splitExporters.forEach((e) => e.addAnimation(morphTargets, lengths));
+        exporter.addAnimation(morphTargets, lengths, undefined, interpolation);
+        splitExporters.forEach((e) => e.addAnimation(morphTargets, lengths, undefined, interpolation));
     }
 
     exporter.addColors(finalModel.getMergedModel());
