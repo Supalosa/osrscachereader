@@ -38,7 +38,9 @@ export class ItemDefinition {
     cost = 1;
 
     /** @type {boolean} */
-    isTradeable;
+    isTradeable = true;
+    /** @type {boolean} */
+    isGETradeable;
 
     /** @type {number} */
     stackable = 0;
@@ -231,6 +233,8 @@ export default class ItemLoader {
             def.wearPos1 = dataview.readInt8();
         } else if (opcode == 14) {
             def.wearPos2 = dataview.readInt8();
+        }else if (opcode == 15) {
+			def.isTradeable = false;
         } else if (opcode == 16) {
             def.members = true;
         } else if (opcode == 23) {
@@ -315,7 +319,7 @@ export default class ItemLoader {
         } else if (opcode == 54) {
             def.femaleHeadModel2 = dataview.readInt32();
         } else if (opcode == 65) {
-            def.isTradeable = true;
+            def.isGETradeable = true;
         } else if (opcode == 75) {
             def.weight = dataview.readInt16();
         } else if (opcode == 78) {
