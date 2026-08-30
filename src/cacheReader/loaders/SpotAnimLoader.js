@@ -90,6 +90,9 @@ export default class SpotAnimLoader {
     handleOpcode(def, opcode, dataview) {
         if (opcode == 1) {
             def.modelId = dataview.readUint16();
+        } else if (opcode == 3) {
+            // Modern cache revisions store the model ID as a four-byte value.
+            def.modelId = dataview.readInt32();
         } else if (opcode == 2) {
             def.animationId = dataview.readUint16();
         } else if (opcode == 4) {
