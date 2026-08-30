@@ -395,7 +395,9 @@ export default class ItemLoader {
                 def.params[key] = value;
             }
         } else {
-            console.error("UNHANDLED OPCODE [ItemLoader]: " + opcode + " last: " + lastOpCode);
+            if (typeof process !== "undefined" && process.env.OSRS_CACHE_READER_VERBOSE === "1") {
+                console.error("UNHANDLED OPCODE [ItemLoader]: " + opcode + " last: " + lastOpCode);
+            }
         }
     }
 }
