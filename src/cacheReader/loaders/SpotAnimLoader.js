@@ -88,6 +88,8 @@ export default class SpotAnimLoader {
     }
 
     handleOpcode(def, opcode, dataview) {
+        // Older cache revisions use an unsigned short model id. Current
+        // revisions use a four-byte model id (opcode 3).
         if (opcode == 1) {
             def.modelId = dataview.readUint16();
         } else if (opcode == 2) {
@@ -122,6 +124,8 @@ export default class SpotAnimLoader {
                 def.textureToFind[var4] = dataview.readUint16();
                 def.textureToReplace[var4] = dataview.readUint16();
             }
+        } else if (opcode == 3) {
+            def.modelId = dataview.readInt32();
         }
     }
 }

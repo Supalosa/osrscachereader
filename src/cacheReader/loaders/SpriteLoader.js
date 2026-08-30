@@ -1,5 +1,3 @@
-import { createCanvas } from "canvas";
-
 const FLAG_VERTICAL = 0b01;
 const FLAG_ALPHA = 0b10;
 /**
@@ -73,6 +71,8 @@ export class Sprite {
         if (width == undefined) width = this.getWidth();
         if (height == undefined) height = this.getHeight();
 
+        // Keep canvas optional: cache/model consumers do not need native image rendering.
+        const { createCanvas } = await import("canvas");
         const canvas = createCanvas(this.getWidth(), this.getHeight());
         const ctx = canvas.getContext("2d");
 
@@ -99,7 +99,7 @@ export class Sprite {
 
     createImageData(ctx) {
         if (ctx == undefined) {
-            const canvas = createCanvas(this.getWidth(), this.getHeight());
+            throw new Error("Sprite image data requires the optional 'canvas' dependency");
             ctx = canvas.getContext("2d");
         }
 
