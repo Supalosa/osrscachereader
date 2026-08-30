@@ -16,6 +16,34 @@ boots). Deduplication remains the default for existing callers.
 named merge policy (or make deduplication opt-in for heterogeneous model
 groups), with a regression fixture containing separate equipment meshes.
 
+## Model composition: preserve Animaya vertex weights
+
+`ModelDefinition.mergeWith` now initialises missing Animaya group/scale arrays
+for the vertices that existed before the merge. Previously it used the
+post-merge vertex count and then appended the incoming model's real weights,
+which inserted an extra component-sized block of bone-zero defaults. On Sol
+Heredit this produced 3,808 weight records for 2,010 vertices: the body became
+rigid and the spear/shield used unrelated body bones and floated away.
+
+The related missing `faceAlphas` defaults now use face counts rather than
+vertex counts.
+
+**Upstream contribution:** add merge tests which assert that per-vertex
+Animaya arrays remain aligned across multiple models and that absent optional
+arrays receive defaults only for their own vertices.
+
+## Model composition: preserve face alpha data
+
+`ModelDefinition.mergeWith` treats an empty `faceAlphas` array as absent and
+inserts opaque defaults for the component's existing faces before appending
+another model. It also merges the already-decoded `faceLabelsAlpha` groups,
+offsetting incoming face indices. Without this, a late component's alpha bytes
+were assigned to the first faces in the merged model and type-5 animation
+transforms lost all of their face targets.
+
+**Upstream contribution:** cover static face alpha and type-5 alpha animation
+groups in the model-composition regression tests.
+
 ## Quiet unknown item opcodes
 
 Unknown `ItemLoader` opcodes are silent by default and can be logged with
