@@ -219,11 +219,6 @@ export class ObjectDefinition {
         let modelData = null;
         let isRotated;
         if (this.objectTypes == null) {
-            // if it has no types then merge
-            if (modelType != 10) {
-                return null;
-            }
-
             if (this.objectModels == null) {
                 return null;
             }
@@ -244,6 +239,13 @@ export class ObjectDefinition {
 
             if (this.objectModels.length > 1) {
                 modelData = new ModelGroup(models).getMergedModel();
+            }
+
+            // Untyped definitions use the definition-level rotated flag too.
+            // Kotlin's ObjectToModelConverter flips this model before applying
+            // its location orientation.
+            if (isRotated) {
+                modelData.method1194();
             }
         } else {
             let var9 = -1;
@@ -268,6 +270,12 @@ export class ObjectDefinition {
             }
         }
 
+        // Object transforms below mutate vertex data. Cache definitions are
+        // shared between lookups, while the Kotlin exporter returns a
+        // defensive ModelDefinition copy for every model-loader access.
+        // Clone here so one orientation cannot contaminate another.
+        modelData = new ModelGroup([modelData], false).getMergedModel();
+
         if (this.modelSizeX == 128 && this.modelSizeHeight == 128 && this.modelSizeY == 128) {
             isRotated = false;
         } else {
@@ -281,7 +289,10 @@ export class ObjectDefinition {
             var11 = true;
         }
 
-        if (modelType == 4 && rotation > 3) {
+        // Wall decorations with an orientation above 3 use the mirrored
+        // model variant plus the cache's diagonal 45-unit local offset.
+        // Keep this in step with SceneExporter's ObjectToModelConverter.
+        if (modelType >= 4 && modelType <= 8 && rotation > 3) {
             modelData.method1206(256);
             modelData.changeOffset(45, 0, -45);
         }

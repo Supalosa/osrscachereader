@@ -97,3 +97,27 @@ now accepts both forms so the SDK can extract Spotanims 478, 506, and 1172.
 
 **Upstream contribution:** document the revision-dependent Spotanim schema and
 add fixtures covering both model-id encodings.
+
+## Terrain RGB mediums must be unsigned
+
+Underlay and overlay definition opcode `1` (and overlay secondary-colour
+opcode `7`) contain an unsigned 24-bit RGB colour. They now use
+`DataView.readUint24()` rather than `readInt24()`.
+
+The signed reader sign-extended a final colour byte with bit 7 set. For
+example, cache RGB `0xC0AA86` was decoded as if its final byte were a negative
+integer, yielding a wildly different HSL value and yellow terrain in the SDK.
+This was especially visible on Colosseum underlay definition 201: the correct
+decoded values are hue blend `6`, saturation `79`, lightness `163`, and hue
+multiplier `58`.
+
+`readInt24()` remains in use for definitions whose field is genuinely signed;
+do not change its global semantics. Use `readUint24()` for RGB mediums.
+
+The underlay palette-packing helper also preserves the decoded saturation
+field. It may reduce a local saturation value while making a packed palette
+index, but mutating the definition would corrupt later neighbourhood blending.
+
+**Upstream contribution:** add RGB-medium fixtures whose final byte is both
+below and above `0x80`, and assert that floor HSL decoding preserves the raw
+definition values after palette packing.
