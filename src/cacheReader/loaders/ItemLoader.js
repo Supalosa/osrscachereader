@@ -395,7 +395,12 @@ export default class ItemLoader {
                 def.params[key] = value;
             }
         } else {
-            console.error("UNHANDLED OPCODE [ItemLoader]: " + opcode + " last: " + lastOpCode);
+            // Newer cache revisions may add item fields that this reader does not
+            // need. Keep extraction output quiet by default; opt in when debugging
+            // a cache-format change.
+            if (typeof process !== "undefined" && process.env.OSRS_CACHE_READER_VERBOSE === "1") {
+                console.error("UNHANDLED OPCODE [ItemLoader]: " + opcode + " last: " + lastOpCode);
+            }
         }
     }
 }
