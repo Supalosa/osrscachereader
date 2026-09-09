@@ -219,6 +219,12 @@ export class ObjectDefinition {
         let modelData = null;
         let isRotated;
         if (this.objectTypes == null) {
+            // "untyped object" - merge all objectModels together
+
+            if (modelType != 10) {
+                return null;
+            }
+
             if (this.objectModels == null) {
                 return null;
             }
@@ -241,13 +247,14 @@ export class ObjectDefinition {
                 modelData = new ModelGroup(models).getMergedModel();
             }
 
-            // Untyped definitions use the definition-level rotated flag too.
-            // Kotlin's ObjectToModelConverter flips this model before applying
-            // its location orientation.
             if (isRotated) {
-                modelData.method1194();
+                modelData.mirrorZ();
             }
         } else {
+            // typed object - each model is a variant
+            // there's a 1:1 correlation between objectTypes and objectModels
+            // if the scene requests a certain objectType we return the
+            // corresponding model
             let var9 = -1;
 
             for (let i = 0; i < this.objectTypes.length; ++i) {
@@ -266,13 +273,11 @@ export class ObjectDefinition {
 
             modelData = await cache.getDef(IndexType.MODELS.id, modelId);
             if (var10) {
-                modelData.method1194();
+                modelData.mirrorZ();
             }
         }
 
-        // Object transforms below mutate vertex data. Cache definitions are
-        // shared between lookups, while the Kotlin exporter returns a
-        // defensive ModelDefinition copy for every model-loader access.
+        // Object transforms below mutate vertex data.
         // Clone here so one orientation cannot contaminate another.
         modelData = new ModelGroup([modelData], false).getMergedModel();
 
@@ -289,10 +294,7 @@ export class ObjectDefinition {
             var11 = true;
         }
 
-        // Wall decorations with an orientation above 3 use the mirrored
-        // model variant plus the cache's diagonal 45-unit local offset.
-        // Keep this in step with SceneExporter's ObjectToModelConverter.
-        if (modelType >= 4 && modelType <= 8 && rotation > 3) {
+        if (modelType == 4 && rotation > 3) {
             modelData.method1206(256);
             modelData.changeOffset(45, 0, -45);
         }
