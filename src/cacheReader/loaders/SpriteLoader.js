@@ -74,19 +74,28 @@ export class Sprite {
             throw new Error("Sprite image rendering requires an injected createCanvas function");
         }
 
-        const imageCanvas = createCanvas(this.getWidth(), this.getHeight());
-        const ctx = imageCanvas.getContext("2d");
+        const canvas = createCanvas(this.getWidth(), this.getHeight());
+        const ctx = canvas.getContext("2d");
 
         let imageData = this.createImageData(ctx);
         ctx.putImageData(imageData, 0, 0);
 
-        if (width == this.getWidth() && height == this.getHeight()) return imageCanvas;
+        let image = new Image();
+        image.src = canvas.toDataURL();
 
-        const resizedCanvas = createCanvas(width, height);
-        resizedCanvas
-            .getContext("2d")
-            .drawImage(imageCanvas, 0, 0, this.getWidth(), this.getHeight(), 0, 0, width, height);
-        return resizedCanvas;
+        let loadPromise = new Promise(
+            (resolve) => {
+                image.onload = () => {
+                    canvas.width = height;
+                    canvas.height = width;
+                    ctx.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), 0, 0, width, height);
+                    resolve(canvas);
+                };
+            },
+            (reject) => {},
+        );
+
+        return loadPromise;
     }
 
     createImageData(ctx) {

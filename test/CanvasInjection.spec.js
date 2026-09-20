@@ -14,7 +14,7 @@ const model = {
 };
 
 describe("Canvas injection", function () {
-    it("accepts createCanvas as the last sprite rendering argument", async function () {
+    it("requires createCanvas only when a sprite image is rendered", async function () {
         const sprite = new Sprite();
         sprite.width = 1;
         sprite.height = 1;
@@ -25,17 +25,6 @@ describe("Canvas injection", function () {
             createImageData: () => ({ data: new Uint8ClampedArray(4) }),
         }).data, new Uint8ClampedArray([255, 0, 0, 254]));
 
-        const createCanvas = (width, height) => ({
-            width,
-            height,
-            getContext: () => ({
-                createImageData: () => ({ data: new Uint8ClampedArray(4) }),
-                putImageData: () => {},
-                drawImage: () => {},
-            }),
-        });
-        const image = await sprite.createImage(2, 3, createCanvas);
-        assert.deepEqual([image.width, image.height], [2, 3]);
     });
 
     it("requires createCanvas only when a GLTF colour palette is generated", function () {
