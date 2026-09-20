@@ -6,7 +6,6 @@ import MapLoader from "../loaders/MapLoader.js";
 import ModelLoader from "../loaders/ModelLoader.js";
 import SpriteLoader from "../loaders/SpriteLoader.js";
 import TextureLoader from "../loaders/TextureLoader.js";
-import MusicTrackLoader from "../loaders/MusicTrackLoader.js";
 import AnimayaLoader from "../loaders/AnimayaLoader.js";
 
 /**
