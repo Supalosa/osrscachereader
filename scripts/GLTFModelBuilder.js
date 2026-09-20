@@ -1,5 +1,6 @@
 import fs from "fs";
 import _ from "lodash";
+import { createCanvas } from "canvas";
 import { IndexType, ConfigType, GLTFExporter, ModelGroup } from "osrscachereader";
 
 let finalModel = new ModelGroup();
@@ -117,8 +118,8 @@ async function loadEntityIds(cache, options, configType, modelTypeKeys, animatio
 }
 
 async function exportGLTFModel(cache) {
-    const exporter = new GLTFExporter(finalModel.getMergedModel());
-    const splitExporters = individualModels.map((m) => new GLTFExporter(m));
+    const exporter = new GLTFExporter(finalModel.getMergedModel(), createCanvas);
+    const splitExporters = individualModels.map((m) => new GLTFExporter(m, createCanvas));
 
     let allLengths = [];
     let allMorphTargets = [];

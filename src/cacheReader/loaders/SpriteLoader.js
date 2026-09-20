@@ -60,48 +60,37 @@ export class Sprite {
         this.pixels = pixels;
     }
 
-    async createImageUrl(width, height) {
+    async createImageUrl(width, height, createCanvas) {
         if (width == undefined) width = this.getWidth();
         if (height == undefined) height = this.getHeight();
 
-        return (await this.createImage(width, height)).toDataURL();
+        return (await this.createImage(width, height, createCanvas)).toDataURL();
     }
 
-    async createImage(width, height) {
+    async createImage(width, height, createCanvas) {
         if (width == undefined) width = this.getWidth();
         if (height == undefined) height = this.getHeight();
+        if (typeof createCanvas != "function") {
+            throw new Error("Sprite image rendering requires an injected createCanvas function");
+        }
 
-        // Keep canvas optional: cache/model consumers do not need native image rendering.
-        const { createCanvas } = await import("canvas");
-        const canvas = createCanvas(this.getWidth(), this.getHeight());
-        const ctx = canvas.getContext("2d");
+        const imageCanvas = createCanvas(this.getWidth(), this.getHeight());
+        const ctx = imageCanvas.getContext("2d");
 
         let imageData = this.createImageData(ctx);
         ctx.putImageData(imageData, 0, 0);
 
-        let image = new Image();
-        image.src = canvas.toDataURL();
+        if (width == this.getWidth() && height == this.getHeight()) return imageCanvas;
 
-        let loadPromise = new Promise(
-            (resolve) => {
-                image.onload = () => {
-                    canvas.width = height;
-                    canvas.height = width;
-                    ctx.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), 0, 0, width, height);
-                    resolve(canvas);
-                };
-            },
-            (reject) => {},
-        );
-
-        return loadPromise;
+        const resizedCanvas = createCanvas(width, height);
+        resizedCanvas
+            .getContext("2d")
+            .drawImage(imageCanvas, 0, 0, this.getWidth(), this.getHeight(), 0, 0, width, height);
+        return resizedCanvas;
     }
 
     createImageData(ctx) {
-        if (ctx == undefined) {
-            throw new Error("Sprite image data requires the optional 'canvas' dependency");
-            ctx = canvas.getContext("2d");
-        }
+        if (ctx == undefined) throw new Error("Sprite image data requires a canvas context");
 
         let imageData = ctx.createImageData(this.getWidth(), this.getHeight());
         for (let i = 0; i < imageData.data.byteLength; i += 4) {

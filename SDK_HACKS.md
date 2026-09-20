@@ -56,20 +56,12 @@ than directly consulting an environment variable.
 
 ## Optional native canvas dependency
 
-`SpriteLoader` no longer imports `canvas` at module load time. Native canvas is
-loaded only when image rendering is requested; raw sprite palette/pixel data
-works without a system canvas installation.
+`SpriteLoader` and `GLTFExporter` no longer import `canvas` at module load time.
+Callers inject a `createCanvas` function when image rendering is requested;
+raw cache, model, and sprite data work without a system canvas installation.
 
 **Upstream contribution:** make rendering backends explicit (raw pixels,
 browser canvas, or Node canvas) and document the optional dependency.
-
-## Reader entry-point export
-
-The package exports `./reader` so the Node-only SDK extraction adapter can use
-the cache reader without relying on internal package paths.
-
-**Upstream contribution:** retain the public subpath export and document the
-supported extraction API.
 
 ## Sequence masks for layered player animation
 
